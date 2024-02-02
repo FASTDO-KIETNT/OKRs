@@ -2,6 +2,8 @@
 @using Newtonsoft.Json;
 @using System.Globalization;
 @inject IJSRuntime jsruntime
+@implements IDisposable
+
 <PageTitle>@_title</PageTitle>
 
 <section class="main_content">
@@ -86,8 +88,8 @@
                             <td align="center">
                                 <label class="td-label">Ngày tạo</label>
                                 <div class="td-value">
-                                   @string.Format("{0:dd/MM/yyyy}", new DateTime(okr.date_created))
-                
+                                    @string.Format("{0:dd/MM/yyyy}", new DateTime(okr.date_created))
+
                                 </div>
                             </td>
                         </tr>
@@ -186,12 +188,19 @@
     private bool success = false;
     private string _message = string.Empty;
     private OKRs editItem = null;
+    private Cycles cyclesItem = null;
     private List<OKRs> dataList = new();
     private List<Cycles> listCycles = new();
     private List<string> okrsShow = new();
     private OKRs okrChart = null;
     private DotNetObjectReference<OkrsList> obj;
 
+    protected override async Task OnInitializedAsync()
+    {
+        obj = DotNetObjectReference.Create(this);
+
+        await GetList();
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (dataList.Count > 0 && firstRender)
@@ -201,19 +210,14 @@
             await jsruntime.InvokeVoidAsync("window.SetDotNetReference", obj, "Create");
         }
     }
-    protected override async Task OnInitializedAsync()
-    {
-        obj = DotNetObjectReference.Create(this);
-
-        await GetList();
-    }
     private async Task GetList()
     {
         try
         {
             listCycles = await DBCycles.GetAllCycles();
+            cyclesItem = await DBCycles.Get(Layout.Cycle);
+            
             dataList = await DBOkrs.GetList(Layout.Cycle, Layout.User.Id);
-            Console.WriteLine("Cycle là: " + Layout.Cycle + " User: " + Layout.User.Id);
             if (dataList.Count > 0 && okrChart == null)
             {
                 await ChangeOkrChart(dataList[0]);
@@ -235,6 +239,11 @@
     [JSInvokable]
     public async Task Create()
     {
+        if (cyclesItem.is_done)
+        {
+            await jsruntime.InvokeVoidAsync("tagline", false, "Chu kỳ đã kết thúc!");
+            return;
+        }
         if (listCycles.Count == 0)
         {
             await jsruntime.InvokeVoidAsync("tagline", false, "Chưa có chu kỳ!");
@@ -250,12 +259,12 @@
                         user_created = Layout.User.Id,
                         key_results = new()
                         {
-                            new()
+                        new()
                             {
-                                id = MongoDB.RandomId(),
-                                cross_linking = new()
+                            id = MongoDB.RandomId(),
+                            cross_linking = new()
                             }
-                        }                   
+                        }   
                     };
                 StateHasChanged();
             }
@@ -266,15 +275,23 @@
     {
         editItem = Clone<OKRs>(item);
     }
-
+    public void Dispose()
+    {
+        try
+        {
+            obj?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            return;
+        }
+    }
     private void UpdateItem(bool isUpdate)
     {
         if (isUpdate)
         {
             GetList();
-            Console.WriteLine("list: " + dataList.Count);
         }
-
         editItem = null;
     }
 
@@ -288,11 +305,12 @@
             var dataList = await DBOkrsCheckin.GetList(Layout.Cycle, okrChart.Id, true);
 
             dataList = dataList.OrderBy(x => x.date_created).ToList();
-            
+
             int chartCount = dataList.Count + 1;
 
             var chartLabel = new string[chartCount];
             var chartDatas = new int[chartCount];
+
             chartLabel[0] = string.Format("{0:dd/MM}", new DateTime(okrChart.date_created));
             chartDatas[0] = 0;
 
@@ -322,5 +340,4 @@
         else
             okrsShow.Add(id);
     }
-
 }

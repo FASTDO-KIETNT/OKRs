@@ -56,7 +56,9 @@ public class DBSuggest
     {
         if (string.IsNullOrEmpty(model.id))
             model.id = MongoDB.RandomId();
+
         model.date = DateTime.Now.Ticks;
+
         var connect = MongoDB.ConnectMongoDB(nameDB);
         var collection = connect.GetCollection<Suggest>(collectionDB);
 
@@ -86,7 +88,6 @@ public class DBSuggest
     {
         var connect = MongoDB.ConnectMongoDB(nameDB);
         var collection = connect.GetCollection<Suggest>(collectionDB);
-
 
         var option = new ReplaceOptions { IsUpsert = false };
 

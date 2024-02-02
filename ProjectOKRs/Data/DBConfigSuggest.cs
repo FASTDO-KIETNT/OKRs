@@ -12,17 +12,17 @@ namespace ProjectOKRs.Data
 
         public static async Task CreatedConfigSuggest(ConfigSuggest configSuggest)
         {
-
             var connect = MongoDB.ConnectMongoDB(nameDB);
             var collection = connect.GetCollection<ConfigSuggest>(collectionDB);
+           
             await collection.InsertOneAsync(configSuggest);
         }
 
         public static async Task<List<ConfigSuggest>> GetAllConfigSuggest()
         {
-
             var connect = MongoDB.ConnectMongoDB(nameDB);
             var collection = connect.GetCollection<ConfigSuggest>(collectionDB);
+            
             return await collection.FindAsync(x => true).Result.ToListAsync();
         }
 
@@ -30,6 +30,7 @@ namespace ProjectOKRs.Data
         {
             var connect = MongoDB.ConnectMongoDB(nameDB);
             var collection = connect.GetCollection<ConfigSuggest>(collectionDB);
+            
             await collection.DeleteOneAsync(x => x.id == id);
         }
 

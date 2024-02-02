@@ -285,17 +285,18 @@ else
     private OKRs okr = null;
     private string replyId = string.Empty;
     private string replyContent = string.Empty;
+  
     protected override async Task OnInitializedAsync()
     {   
-        okr = await DBOkrs.Get(Id, Layout.Cycle);
-        if (okr != null)
-        {
-            dataList = await DBOkrsCheckin.GetList(Layout.Cycle, okr.Id, true);
-            Console.WriteLine("dataList: " + dataList.Count);
-            if (dataList.Count > 0)
-                model = dataList[0];
-            await jsruntime.InvokeVoidAsync("textAutoSize", "replyInput");
-        }
+      okr = await DBOkrs.Get(Id, Layout.Cycle);
+      if (okr != null)
+      {
+        dataList = await DBOkrsCheckin.GetList(Layout.Cycle, okr.Id, true);
+        Console.WriteLine("dataList: " + dataList.Count);
+        if (dataList.Count > 0)
+          model = dataList[0];
+        await jsruntime.InvokeVoidAsync("textAutoSize", "replyInput");
+      }
     }
 
     private void ChangeCheckin(ChangeEventArgs e)
@@ -328,16 +329,16 @@ else
                     model.feedbacks = new();
 
                 model.feedbacks.Add(new()
-          {
-            id = MongoDB.RandomId(),
-            user = Layout.User.Id,
-            date = DateTime.Now.Ticks,
-            content = replyContent,
-            kr = replyId
-          });
-                model = await DBOkrsCheckin.Update(model);
-                replyId = string.Empty;
-                replyContent = string.Empty;
+                {
+                  id = MongoDB.RandomId(),
+                  user = Layout.User.Id,
+                  date = DateTime.Now.Ticks,
+                  content = replyContent,
+                  kr = replyId
+                });
+              model = await DBOkrsCheckin.Update(model);
+              replyId = string.Empty;
+              replyContent = string.Empty;
             }
         }
         catch (Exception ex)
@@ -346,5 +347,4 @@ else
         }
         return _success;
     }
-
 }

@@ -12,6 +12,7 @@ public class DBOkrsCheckin
 
     private static string nameDB = "OKRsApp";
     private static string collectionDB = "okrs_checkin";
+
     public static async Task<OkrsCheckin> Get(string id)
     {
         var connect = MongoDB.ConnectMongoDB(nameDB);
@@ -149,7 +150,6 @@ public class DBOkrsCheckin
         return list;
     }
 
-    // Câu hỏi: chi tiết
     public static StaticModel Question(int id)
     {
         var query = from s in Question()

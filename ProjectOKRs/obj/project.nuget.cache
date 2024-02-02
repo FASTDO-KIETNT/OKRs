@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "yrfTwv/QxsZGYGZm3u9phX8RT84lOugZAb6yoy2mwgp9nNEgzwXNIhzW+Ok722s8oAMFw4U8KxKrg23oetV4iw==",
+  "dgSpecHash": "tS3LtSFCEAhjUmd9GJLGtHMr2Cf7PJhQnHOgxp4uo2ycq7Gg5CfttuhOLQApxZTm7JiR1QHwSXusbSQWO81g2w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\ProjectOKRs.csproj",
+  "projectFilePath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\ProjectOKRs.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\aksoftware.blazor.utilities\\1.0.0\\aksoftware.blazor.utilities.1.0.0.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\awssdk.core\\3.7.100.14\\awssdk.core.3.7.100.14.nupkg.sha512",

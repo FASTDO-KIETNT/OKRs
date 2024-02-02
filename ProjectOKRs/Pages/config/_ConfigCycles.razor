@@ -11,11 +11,11 @@
             <ul class="columns is-vcentered is-variable is-2 is-mobile mb-2">
                 <li class="column">
                     <h1 class="title is-5 is-size-6 has-text-info">
-                        CHU KỲ
+                        Danh sách chu kỳ
                     </h1>
                 </li>
                 <li class="column is-narrow">
-                    <a class="button" @onclick="() => EditCycles(null)">
+                    <a class="button" @onclick="() => EditItem(null)">
                         <span class="icon">
                             <i class="material-icons-outlined is-size-6">add</i>
                         </span>
@@ -70,10 +70,10 @@
                                 <td align="center">
                                     <label class="td-label">Xử lý</label>
                                     <div class="td-value">
-                                        <a class="icon has-text-link" @onclick="() => EditCycles(item)">
+                                        <a class="icon has-text-link" @onclick="() => EditItem(item)">
                                             <i class="material-icons-outlined is-size-5">edit </i>
                                         </a>
-                                        <a class="icon has-text-danger" @onclick="()=>DeleteCycles(item)">
+                                        <a class="icon has-text-danger" @onclick="()=>DeleteItem(item)">
                                             <i class="material-icons-outlined is-size-5">delete</i>
                                         </a>
                                     </div>
@@ -89,17 +89,15 @@
     @if (newCycles != null)
     {
         <div class="modal is-active">
-            <div class="modal-background">
-
-            </div>
+            <div class="modal-background"></div>
             <div class="modal-card">
                 <div class="modal-card-head">
                     <div class="modal-card-title">
                         @(string.IsNullOrEmpty(newCycles.id) ? "Tạo chu kỳ mới" : "Chỉnh sửa chu kỳ")
                     </div>
-                    <a @onclick="() => newCycles = null" class="delete"></a>
+                    <a class="delete" @onclick="() => newCycles = null"></a>
                 </div>
-                <form class="modal-card-body">
+                <form @onsubmit="Update" class="modal-card-body">
                     <div class="field">
                         <label class="label">Tên chu kỳ *</label>
                         <div class="control">
@@ -145,21 +143,16 @@
                             <_InputDate @bind-Start="EndDate" IsRight />
                         </div>
                     </div>
-                    @if (!string.IsNullOrEmpty(_message))
-                    {
-                        <div class="has-text-danger has-text-centered is-italic mt-3">@_message</div>
-                    }
                     <div class="field mt-5">
                         <div class="buttons is-right">
                             <a class="button" @onclick="() => newCycles = null">
                                 Hủy
                             </a>
-                            <a class="button is-link" @onclick="UpdateCycles">
+                            <a class="button is-link" @onclick="Update">
                                 <span class="icon">
                                     <i class="material-icons-outlined is-size-6">done</i>
                                 </span>
-                                <span>Lưu</span>
-
+                                <span>Cập nhật</span>
                             </a>
                         </div>
                     </div>
@@ -186,7 +179,6 @@ else
     public string _title = "CFRs - Chu Kỳ";
     private string _message = string.Empty;
     private List<Cycles> dataList { set; get; } = new();
-
     private Cycles configCycles = new();
     long StartDate { get; set; }
     long EndDate { get; set; }
@@ -195,7 +187,6 @@ else
     protected override async Task OnInitializedAsync()
     {
         await getAllCycles();
-
     }
 
     public async Task getAllCycles()
@@ -204,7 +195,7 @@ else
     }
 
 
-    public async Task<bool> DeleteCycles(Cycles cycles)
+    public async Task<bool> DeleteItem(Cycles cycles)
     {
         if (!await jsruntime.InvokeAsync<bool>("confirm", $"Are you sure you want to remove {cycles.name} ?"))
         {
@@ -214,7 +205,7 @@ else
         {
             await DBCycles.DeleteCycles(cycles.id);
             await getAllCycles();
-            navigation.NavigateTo(navigation.Uri,true);
+            navigation.NavigateTo(navigation.Uri, true);
             return true;
         }
     }
@@ -222,7 +213,7 @@ else
     {
         newCycles.is_done = done;
     }
-    private void EditCycles(Cycles item)
+    private void EditItem(Cycles item)
     {
         if (item == null)
         {
@@ -239,27 +230,18 @@ else
 
 
     }
-    private async Task<bool> UpdateCycles()
+    private async Task<bool> Update()
     {
         bool success = true;
 
         try
         {
             success = false;
-            _message = string.Empty;
 
             if (string.IsNullOrEmpty(newCycles.name) || StartDate == 0 || EndDate == 0)
-            {
-                _message = "Nhập các trường bắt buộc (*)";
-                await jsruntime.InvokeVoidAsync("tagline", false, _message);
-                _message = string.Empty;
-            }
+                await jsruntime.InvokeVoidAsync("tagline", false, "Nhập các trường bắt buộc (*)");
             else if (StartDate > EndDate)
-            {
-                _message = "Ngày bắt đầu không thể lớn hơn ngày kết thúc!";
-                await jsruntime.InvokeVoidAsync("tagline", false, _message);
-                _message = string.Empty;
-            }
+                await jsruntime.InvokeVoidAsync("tagline", false, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
             else
             {
                 newCycles.start_date = StartDate;
@@ -270,7 +252,7 @@ else
                     newCycles.id = MongoDB.RandomId();
                     dataList.Add(newCycles);
                     await DBCycles.CreatedCycles(newCycles);
-                     navigation.NavigateTo(navigation.Uri,true);
+                    navigation.NavigateTo(navigation.Uri, true);
                     newCycles = null;
                 }
 
@@ -278,7 +260,7 @@ else
                 await DBCycles.UpdateCycles(newCycles);
 
                 newCycles = null;
-                navigation.NavigateTo(navigation.Uri,true);
+                navigation.NavigateTo(navigation.Uri, true);
             }
         }
         catch (Exception ex)

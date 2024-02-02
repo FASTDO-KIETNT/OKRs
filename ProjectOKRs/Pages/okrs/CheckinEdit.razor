@@ -193,9 +193,6 @@
           }
         </tbody>
       </table>
-
-
-
       <div class="field is-grouped is-grouped-multiline mt-5">
         @if (!model.is_done && Layout.User.okr_checkin)
         {
@@ -334,24 +331,20 @@
   [Parameter]
   public string CheckinId { get; set; }
   private string message = string.Empty;
-
   private OKRs okr = null;
   private OkrsCheckin model = new();
   private DateTimeOffset? nextCheckin = null;
-    private List<Users> usersList = new();
+  private List<Users> usersList = new();
   private List<Users> managerList = new();
   private string filterDepartment = string.Empty;
   private bool showAlertCheckin = false;
 
 
-  protected override async Task OnInitializedAsync()
-  {
-  }
-
     protected override async Task OnParametersSetAsync()
   {
     okr = await DBOkrs.Get(OkrId);
-    usersList = await DBUsers.GetUserRoleManager();
+    usersList = await DBUsers.GetUserRoleManagerAndAdmin();
+
     if (okr != null)
     {
       if (!string.IsNullOrEmpty(CheckinId))
@@ -432,10 +425,7 @@
       {
         if (string.IsNullOrEmpty(model.id))
         {
-          // Create Checkin on DB
           await DBOkrsCheckin.Create(model);
-
-        
         }
         else
           await DBOkrsCheckin.Update(model);
@@ -507,7 +497,6 @@
           kr.confident = checkin.confident;
         }
       }
-
       // Update OKRs
       okr.confident = model.confident;
       okr.progress_prev = model.progress_prev;
@@ -531,8 +520,6 @@
         timeCheckin.status = 0;
         await DBTimeCheckin.Create(timeCheckin);
       }
-
-
       navigation.NavigateTo($"/okr/checkin/{okr.Id}/info", false);
     }
     catch (Exception ex)
@@ -567,8 +554,6 @@
           await DBOkrsCheckin.Create(model);
         else
           await DBOkrsCheckin.Update(model);
-
-
         // Cập nhật lại KR khi checkin
         foreach (var kr in okr.key_results)
         {
@@ -580,7 +565,6 @@
             kr.confident = checkin.confident;
           }
         }
-
         // Cập nhật OKRs khi checkin
         okr.status_checkin = 3;
         okr.status_checkin_old = 3;

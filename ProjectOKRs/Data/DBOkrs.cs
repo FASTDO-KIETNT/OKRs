@@ -19,7 +19,6 @@ public class DBOkrs
     }
     public static async Task CreatedOKRs(OKRs okrs)
     {
-
         var connect = MongoDB.ConnectMongoDB(nameDB);
         var collection = connect.GetCollection<OKRs>(collectionDB);
         await collection.InsertOneAsync(okrs);
@@ -112,21 +111,10 @@ public class DBOkrs
             double total = 0;
             foreach (var kr in keyResults)
             {
-                total += Progress(kr.result, kr.goal);
+                total += Shared.Components.Shared.Progress(kr.result, kr.goal);
             }
 
             return total / keyResults.Count;
-        }
-        else
-            return 0;
-    }
-
-    public static double Progress(double result, double target)
-    {
-        if (result > 0 && target > 0)
-        {
-            double progress = result * 100 / target;
-            return progress > 100 ? 100 : progress;
         }
         else
             return 0;
@@ -181,7 +169,6 @@ public class DBOkrs
 
         return list;
     }
-    // Mức độ tự tin: chi tiết
     public static StaticModel Confident(int id)
     {
         var query = from s in Confident()

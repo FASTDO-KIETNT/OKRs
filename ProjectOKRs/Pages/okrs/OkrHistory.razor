@@ -18,7 +18,7 @@
         </li>
         <li class="column is-one-quarter">
           <div class="select is-fullwidth">
-            <select @onchange="ChangeFilterOkr">
+            <select @onchange="ChangeOkrs">
               <option value="">Lọc theo OKRs</option>
               @foreach (var item in okrList)
               {
@@ -144,7 +144,7 @@
     await GetList();
   }
 
-  private async Task ChangeFilterOkr(ChangeEventArgs e)
+  private async Task ChangeOkrs(ChangeEventArgs e)
   {
     filterOkr = e.Value.ToString();
     await GetList();

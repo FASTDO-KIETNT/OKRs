@@ -11,12 +11,7 @@
                         @(string.IsNullOrEmpty(model.Id) ? "TẠO OKRs MỚI" : " CHỈNH SỮA OKRs")</div>
                 </div>
                 <div class="column is-narrow">
-                    <button class="button" @onclick="()=>model=null">
-                        <span class="icon">
-                            <span class="material-icons-outlined">close</span>
-                        </span>
-                        <span>Hủy tạo</span>
-                    </button>
+                    <Button Content="Hủy tạo" IconLeft="close" Onclick="Cancel" />
                 </div>
             </div>
         </div>
@@ -214,16 +209,14 @@
     protected override async Task OnInitializedAsync()
     {
         allOkrs = await DBOkrs.GetAll(Layout.Cycle);
-        managerList = await DBUsers.GetUserRoleManager();
-        Console.WriteLine("ALl OKRs: " + allOkrs.Count);
+        managerList = await DBUsers.GetUserRoleManagerAndAdmin();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            listUsers = await DBUsers.GetAllUser();
-            Console.WriteLine("ID " + Layout.Cycle + " và user " + Layout.User.Id);
+            listUsers = await DBUsers.GetAll();
         }
     }
     private async Task DeleteKey(OKRs.KeyResult item)
@@ -263,12 +256,13 @@
             else if (model.key_results.Where(x => Shared.IsEmptyB(x.name)).Count() > 0)
                 await jsruntime.InvokeVoidAsync("tagline", false,
                 "Nhập đầy đủ tiêu đề của các kết quả then chốt hoặc xóa kết quả then chốt không cần thiết!");
-            else if (model.key_results.Where(x => x.goal == 0).Count() > 0
-            || model.key_results.Where(x => Shared.IsEmptyB(x.unit)).Count() > 0)
+            else if (model.key_results.Where(x => x.goal == 0).Count() > 0 || model.key_results.Where(x => Shared.IsEmptyB(x.unit)).Count() > 0)
                 await jsruntime.InvokeVoidAsync("tagline", false, "Nhập đầy đủ mục tiêu của các kết quả then chốt!");
+            else if(model.key_results.Count == 0)
+                await jsruntime.InvokeVoidAsync("tagline", false, "Sống có mục tiêu đi bạn êi!");
+                
             else
             {
-                // Lấy dữ liệu cũ
                 var okrOld = await DBOkrs.Get(model.Id);
                 foreach (var kr in model.key_results)
                     kr.cross_linking.RemoveAll(x => string.IsNullOrEmpty(x.okr));
@@ -286,14 +280,13 @@
                 }
                 await AddHistory(okrOld, model);
                 await OnUpdate.InvokeAsync(true);
-                navigation.NavigateTo(navigation.Uri,true);
+                navigation.NavigateTo(navigation.Uri, true);
             }
         }
         catch (Exception ex)
         {
             _success = false;
         }
-
         return _success;
     }
     private async Task Cancel()
@@ -321,6 +314,12 @@
         }
         return _success;
     }
+    /// <summary>
+    /// Adds a history log for the changes made to the OKRs.
+    /// </summary>
+    /// <param name="okrOld">The old OKRs.</param>
+    /// <param name="okrNew">The new OKRs.</param>
+    /// <returns>A boolean indicating whether the history log was successfully added.</returns>
     private async Task<bool> AddHistory(OKRs okrOld, OKRs okrNew)
     {
         bool _success = true;
@@ -419,6 +418,13 @@
         return _success;
     }
 
+    /// <summary>
+    /// Adds the history of key results changes to the OkrLog object.
+    /// </summary>
+    /// <param name="log">The OkrLog object to add the history to.</param>
+    /// <param name="okrOld">The old OKRs.</param>
+    /// <param name="okrNew">The new OKRs.</param>
+    /// <returns>True if there were any key results changes, false otherwise.</returns>
     private bool AddHistoryKey(OkrLog log, OKRs okrOld, OKRs okrNew)
     {
         bool hasEdit = false;

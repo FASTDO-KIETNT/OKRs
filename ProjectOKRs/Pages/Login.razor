@@ -3,8 +3,6 @@
 @inject NavigationManager NavigationManager
 @using ProjectOKRs.Models
 @using ProjectOKRs.Data
-@using System.Security.Claims
-@using Microsoft.AspNetCore.Authentication.Cookies
 @inject ILocalStorageService localStorage
 @inject IJSRuntime jsruntime
 @inject NavigationManager navigation
@@ -47,7 +45,10 @@
                                 <span class="is-size-7">Ghi nhớ mật khẩu</span>
                             </label>
                         </div>
-
+                        @if (!string.IsNullOrEmpty(message))
+                        {
+                            <div class="has-text-danger has-text-centered is-italic mt-3">@message</div>
+                        }
                         <button class="button is-link is-fullwidth mb-3 ">
                             <span class="is-size-7">
                                 Đăng nhập</span>
@@ -84,10 +85,7 @@
                         OKRs
                     </a>
                 </div>
-                @if (!string.IsNullOrEmpty(message))
-                {
-                    <div class="has-text-danger has-text-centered is-italic mt-3">@message</div>
-                }
+
             </form>
             <a class="button is-danger is-outlined is-fullwidth" @onclick="Logout">
                 <span class="icon">
@@ -180,7 +178,6 @@
                     localStorage.SetItemAsync("_cycles", dataList[0].id);
                     message = string.Empty;
                 }
-
             }
             StateHasChanged();
         }

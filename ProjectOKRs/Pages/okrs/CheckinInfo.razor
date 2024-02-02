@@ -452,7 +452,6 @@ else
             }
         }
     }
-
     private async Task GetData()
     {
         if (okr != null)
@@ -482,7 +481,7 @@ else
         try
         {
             var user = await DBUsers.Get(okr.user_created);
-            if (await DBUsers.CheckManagerRole(user, Layout.User.Id, null))
+            if (okrsCheckin.user_checkin == Layout.User.Id || Layout.User.is_admin)
             {  
             // Update Checkin
             okrsCheckin.draft = false;

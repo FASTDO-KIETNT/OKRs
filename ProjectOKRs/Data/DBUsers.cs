@@ -1,3 +1,4 @@
+using Amazon.SecurityToken.Model;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MongoDB.Driver;
 using ProjectOKRs.Models;
@@ -16,10 +17,9 @@ namespace ProjectOKRs.Data
             var user = await collection.Find(u => u.Username == username && u.Password == password).FirstOrDefaultAsync();
 
             return user;
-
         }
-
-        public static async Task<List<Users>> GetAllManagerUser()
+        // Lấy tất cá user có role là employee và manager
+        public static async Task<List<Users>> GetUsersRoleEmPloyeeAndManager()
         {
             var connect = MongoDB.ConnectMongoDB(nameDB);
             var collection = connect.GetCollection<Users>(collectionDB);
@@ -28,17 +28,9 @@ namespace ProjectOKRs.Data
 
             return result;
         }
-
-        public static async Task<List<Users>> GetAllUser()
-        {
-            var connect = MongoDB.ConnectMongoDB(nameDB);
-            var collection = connect.GetCollection<Users>(collectionDB);
-            var result = await collection.FindAsync(x => true).Result.ToListAsync();
-
-            return result;
-        }
-
-        public static async Task<List<Users>> GetUserRoleManager()
+      
+        // Lấy tất cá user có role là admin và manager
+        public static async Task<List<Users>> GetUserRoleManagerAndAdmin()
         {
             var connect = MongoDB.ConnectMongoDB(nameDB);
             var collection = connect.GetCollection<Users>(collectionDB);
@@ -70,7 +62,7 @@ namespace ProjectOKRs.Data
         }
         public static async Task<bool> CheckManagerRole(Users user, string manager, List<Users> listUser)
         {
-            listUser = await GetAllUser();
+            listUser = await GetAll();
             foreach (var item in listUser)
             {
                 // Lấy admin và manager
@@ -113,65 +105,5 @@ namespace ProjectOKRs.Data
 
             return model;
         }
-
-
-        public static Task CreateList()
-        {
-            var list = new List<Users>();
-
-            list.Add(new Users
-            {
-                Id = MongoDB.RandomId(),
-                fullname = "ADMIN",
-                delete = false,
-                Username = "ADMIN",
-                Password = "123",
-                is_admin = true,
-                Role = "ADMIN",
-            });
-
-
-            list.Add(new Users
-            {
-                Id = MongoDB.RandomId(),
-                fullname = "Ngọc Nga",
-                delete = false,
-                Username = "ngocnga",
-                Password = "123",
-                is_admin = false,
-                Role = "MANAGER",
-            });
-
-
-            list.Add(new Users
-            {
-                Id = MongoDB.RandomId(),
-                fullname = "Công Nam",
-                delete = false,
-                Username = "congnam",
-                Password = "123",
-                is_admin = false,
-                Role = "EMPLOYEE",
-            });
-
-
-            list.Add(new Users
-            {
-                Id = MongoDB.RandomId(),
-                fullname = "Hưng Lê",
-                delete = false,
-                Username = "hungle",
-                Password = "123",
-                is_admin = false,
-                Role = "EMPLOYEE",
-            });
-            var connect = MongoDB.ConnectMongoDB(nameDB);
-            var collection = connect.GetCollection<Users>(collectionDB);
-            collection.InsertMany(list);
-            return null;
-        }
     }
-
-
-
 }

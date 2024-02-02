@@ -676,8 +676,8 @@
   {
     editMode = 0;
     userInfo = await DBUsers.Get(UserId);
-    listUser = await DBUsers.GetAllUser();
-    listManager = await DBUsers.GetUserRoleManager();
+    listUser = await DBUsers.GetAll();
+    listManager = await DBUsers.GetUserRoleManagerAndAdmin();
     okr = await DBOkrs.Get(OkrId);
     okrList = await DBOkrs.GetList(Layout.Cycle, UserId);
     isManager = await DBUsers.CheckManagerRole(userInfo, Layout.User.Id, null);
@@ -755,7 +755,7 @@
            await JSRuntime.InvokeVoidAsync("tagline", false, "Bạn chưa chọn người đánh giá!");
         }
       }
-          else
+      else
       {
         okr.review_send_status = 2;
         okr.review_send_date = DateTime.Now.Ticks;
@@ -799,7 +799,6 @@
         await JSRuntime.InvokeVoidAsync("tagline", false, "Bạn chưa nhập nhận xét OKRs!");
       else if (okr.key_results.Any(x => Shared.IsEmpty(x.review_data.manager_comment)))
         await JSRuntime.InvokeVoidAsync("tagline", false, "Bạn chưa nhập nhận xét KR!");
-        
       else if (Shared.IsEmpty(okr.review_manager_comment))
         await JSRuntime.InvokeVoidAsync("tagline", false, "Bạn chưa nhập quản lý phản hồi!");
       else

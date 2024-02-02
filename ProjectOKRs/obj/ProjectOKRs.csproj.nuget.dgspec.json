@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\ProjectOKRs.csproj": {}
+    "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\ProjectOKRs.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\ProjectOKRs.csproj": {
+    "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\ProjectOKRs.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\ProjectOKRs.csproj",
+        "projectUniqueName": "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\ProjectOKRs.csproj",
         "projectName": "ProjectOKRs",
-        "projectPath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\ProjectOKRs.csproj",
+        "projectPath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\ProjectOKRs.csproj",
         "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\ProjectOKRs\\obj\\",
+        "outputPath": "C:\\Users\\ADMIN\\Desktop\\fastdo\\OKRs\\ProjectOKRs\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"

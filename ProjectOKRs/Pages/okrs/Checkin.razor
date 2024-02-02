@@ -2,8 +2,8 @@
 @page "/okr/checkin/{UserId}"
 @inject IJSRuntime jsruntime
 @inject NavigationManager navigation
-<PageTitle>@_title</PageTitle>
 
+<PageTitle>@_title</PageTitle>
 
 <section class="main_content">
   <div class="card flex_column is_fullheight">
@@ -19,12 +19,9 @@
           <MemberSearch sources="usersList" OnUpdate="ChangeFilterUser" />
         </li>
         <li class="column is-narrow">
-          <a href="/okr/history/@userInfo.Id">Lịch sử chỉnh sửa</a>
+          <a @onclick="() => ShowListHistory()">Lịch sử chỉnh sửa</a>
         </li>
       }
-      <li class="column is-narrow">
-        <a href="/okr/history/241F7AA7FF" previewlistener="true" Lịch sử chỉnh sửa></a>
-      </li>
     </ul>
     <div class="inner_section scrolly" style="flex:1">
       <table class="table is-fullwidth is-noborder is-responsive sticky only_desktop" style="width:100%">
@@ -46,7 +43,6 @@
             var confident = DBOkrs.Confident(okr.confident);
             var progress = DBOkrs.GetProgress(okr.key_results);
             var okrColor = Shared.ProgressColor(progress);
-
             <tr>
               <td>
                 <div class="is-flex">
@@ -185,14 +181,11 @@
   public MainLayout Layout { get; set; }
   [Parameter]
   public string UserId { get; set; }
-
-
   private List<OKRs> okrList = new();
   private List<Users> usersList = new();
   private List<string> okrsShow = new();
   private Users userInfo = null;
   private string userFullName = string.Empty;
-
   private string _title = "CFRs - Check-in";
 
   protected override async Task OnParametersSetAsync()
@@ -213,7 +206,6 @@
         userFullName = "Tài khoản không tồn tại";
       }
     }
-
     await ShowOkrList();
     await showUserList();
   }
@@ -223,11 +215,10 @@
     bool _success = true;
     try
     {
-      usersList = await DBUsers.GetAllUser();
+      usersList = await DBUsers.GetAll();
     }
     catch (Exception ex)
     {
-
       _success = false;
     }
     return _success;
@@ -239,6 +230,27 @@
       okrsShow.Remove(id);
     else
       okrsShow.Add(id);
+  }
+
+  private async Task ShowListHistory()
+  {
+    try
+    {
+      if (userInfo.Id == Layout.User.Id || Layout.User.is_admin)
+      {
+        navigation.NavigateTo("/okr/history/" + userInfo.Id);
+      }
+      else
+      {
+        await jsruntime.InvokeVoidAsync("tagline", false, "Bạn không có quyền xem lịch sử chỉnh sữa OKRs của " + userInfo.fullname);
+      }
+    }
+    catch (Exception ex)
+    {
+      Console.WriteLine(ex.Message);
+    }
+
+
   }
   private async Task<bool> ShowOkrList()
   {
@@ -254,7 +266,6 @@
     }
     return _success;
   }
-
 
   private void ChangeFilterUser(string value)
   {
